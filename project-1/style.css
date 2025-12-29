@@ -263,3 +263,46 @@ section .container {
   color: #0e3959;
   margin-top: 10px;
 }
+
+/* booking form style */
+#booking {
+  padding: 60px 0;
+  background: #f8f9fa;
+}
+#booking h2 {
+  text-align: center;
+  color: #0e3959;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+form {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+form button {
+  background: #0e3959;
+  color: #fff;
+  border: none;
+  padding: 13px 23px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: bolder;
+}
+form button:hover {
+  background: yellow;
+  color: #0e3959;
+}

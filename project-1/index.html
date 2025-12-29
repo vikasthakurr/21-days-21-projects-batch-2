@@ -193,5 +193,60 @@
         </div>
       </div>
     </section>
+
+    <!-- booking form -->
+    <section
+      id="booking"
+      role="form"
+      aria-labelledby="booking-form"
+      aria-describedby="destinations-booking-form"
+    >
+      <div class="container">
+        <h2 id="booking-heading">Book Your Trip</h2>
+        <p id="booking-desc" style="text-align: center; margin-bottom: 20px">
+          Fill out your details and we’ll get back to you shortly.
+        </p>
+        <form action="" aria-label="booking-form">
+          <label for="fullname" class="visually-hidden">Full Name</label>
+          <input
+            type="text"
+            name=""
+            id="fullname"
+            placeholder="Enter your fullname"
+            required
+          />
+          <label for="">Email</label>
+          <input
+            type="email"
+            name=""
+            id=""
+            placeholder="enter email"
+            required
+          />
+          <label for="phone">Mobile Number</label>
+          <input
+            type="tel"
+            name=""
+            id=""
+            placeholder="enter mobile number"
+            required
+          />
+          <label for="destination">Destination</label>
+          <select name="" id="destination">
+            <option value="">Select Trip Location</option>
+            <option value="">Paris</option>
+            <option value="">Bali</option>
+            <option value="">NewYork</option>
+            <option value="">Tokyo</option>
+          </select>
+          <label for="message">Message</label>
+          <textarea name="message" id="message" rows="5"></textarea>
+
+          <button type="submit" aria-labelledby="Submit booking form">
+            Submit Booking
+          </button>
+        </form>
+      </div>
+    </section>
   </body>
 </html>
