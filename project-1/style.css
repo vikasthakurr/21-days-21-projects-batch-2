@@ -306,3 +306,57 @@ form button:hover {
   background: yellow;
   color: #0e3959;
 }
+
+footer {
+  background: #0e3959;
+  color: #fff;
+  padding: 40px 0 0;
+}
+footer .footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+footer h3 {
+  margin-bottom: 15px;
+}
+footer ul {
+  list-style: none;
+}
+footer ul li {
+  margin-bottom: 8px;
+}
+footer ul a {
+  color: #fff;
+  text-decoration: none;
+}
+footer iframe {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  height: 200px;
+}
+.footer-bottom {
+  text-align: center;
+  padding: 15px 0;
+  background: #092940;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+/* ================== Responsive Design ================== */
+@media (max-width: 992px) {
+  .destination-card img,
+  .package img {
+    height: 180px;
+  }
+}
+@media (max-width: 768px) {
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .home-content h2 {
+    font-size: 2.2rem;
+  }
+}
