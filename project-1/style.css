@@ -228,3 +228,38 @@ section .container {
   color: #0e3959;
   transform: scale(1.05);
 }
+#testimonials {
+  padding: 60px 0;
+}
+#testimonials h2 {
+  text-align: center;
+  color: #0e3959;
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.testimonial {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  text-align: center;
+}
+.testimonial i {
+  color: yellow;
+  margin-bottom: 10px;
+}
+.testimonial p {
+  font-style: italic;
+  margin-bottom: 10px;
+}
+.testimonial h4 {
+  color: #0e3959;
+  margin-top: 10px;
+}
