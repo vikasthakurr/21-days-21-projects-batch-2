@@ -42,3 +42,60 @@ nav a {
 nav a:hover {
   color: yellow;
 }
+
+/* home style */
+#home {
+  position: relative;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: rgb(0, 0, 0, 0.5);
+}
+.home-content {
+  position: relative;
+  z-index: 3;
+  max-width: 800px;
+  text-align: center;
+}
+.home-content h2 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+.home-content p {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+}
+.home-content .btn {
+  background-color: yellow;
+  color: #0e3959;
+  padding: 15px 28px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.home-content .btn:hover {
+  background: #fff;
+  color: #0e3959;
+}
