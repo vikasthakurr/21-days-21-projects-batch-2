@@ -1,3 +1,5 @@
+//TODO: please add a footer in index.html file before making the submission
+
 const toggleBtn = document.getElementById("themeToggle");
 toggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("light-theme");
