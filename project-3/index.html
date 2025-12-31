@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manager Tool</title>
+
+    <!-- Bootstrap 5 -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -13,17 +15,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <!-- custom css -->
     <style>
       :root {
         --sidebar-width: 220px;
@@ -102,7 +96,7 @@
   </head>
   <body>
     <div class="layout-wrapper">
-      <!-- sidebar -->
+      <!-- Sidebar -->
       <aside class="sidebar p-3 d-flex flex-column flex-shrink-0">
         <div class="d-flex align-items-center mb-4 ps-2">
           <i class="fa-solid fa-robot fa-2x me-2 text-primary"></i>
@@ -111,7 +105,7 @@
             <small class="text-muted">Management Suite</small>
           </div>
         </div>
-        <!-- navbar -->
+
         <nav class="nav flex-column mb-auto">
           <a class="nav-link active" href="#"
             ><i class="fa-solid fa-gauge-high me-3"></i>Dashboard</a
@@ -134,9 +128,9 @@
         </nav>
       </aside>
 
-      <!-- main content -->
+      <!-- Main Content -->
       <div class="main-content">
-        <!-- topbar -->
+        <!-- Topbar -->
         <header
           class="topbar d-flex align-items-center justify-content-between"
         >
@@ -146,6 +140,7 @@
             </button>
             <h4 class="mb-0 d-none d-md-block">Dashboard</h4>
           </div>
+
           <div class="d-flex align-items-center gap-3">
             <div class="input-group" style="min-width: 300px">
               <span class="input-group-text"
@@ -188,10 +183,9 @@
             </div>
           </div>
         </header>
-
-        <!-- main dashboard -->
+        <!-- Main Dashboard Content -->
         <main class="flex-grow-1 p-4" style="min-height: 100vh">
-          <!-- kpi row -->
+          <!-- KPI Row -->
           <div class="row g-4">
             <div class="col-md-3">
               <div class="card p-3 kpi-card">
@@ -225,11 +219,11 @@
             </div>
           </div>
 
-          <!-- chart and table section -->
+          <!-- Chart + Table -->
           <div class="row g-4 my-4">
             <div class="col-lg-7">
-              <div class="card">
-                <h6>Utilization - Last 6 Months</h6>
+              <div class="card p-3 h-100">
+                <h6>Utilization — Last 6 Months</h6>
                 <canvas id="utilChart" height="140"></canvas>
               </div>
             </div>
@@ -248,7 +242,7 @@
                   <tbody>
                     <tr>
                       <td>Platform</td>
-                      <td>28 Member</td>
+                      <td>28 members</td>
                       <td>
                         <div class="d-flex align-items-center gap-2">
                           <div style="flex: 1">
@@ -265,14 +259,14 @@
                     </tr>
                     <tr>
                       <td>Data Science</td>
-                      <td>14 Members</td>
+                      <td>14 members</td>
                       <td>
                         <div class="d-flex align-items-center gap-2">
                           <div style="flex: 1">
                             <div class="progress" style="height: 8px">
                               <div
-                                class="progress-bar"
-                                style="width: 76%"
+                                class="progress-bar bg-info"
+                                style="width: 62%"
                               ></div>
                             </div>
                           </div>
@@ -286,7 +280,7 @@
             </div>
           </div>
 
-          <!-- ongoing project -->
+          <!-- Ongoing Projects -->
           <section id="projects" class="mb-5">
             <div class="card p-4">
               <div
@@ -294,15 +288,16 @@
               >
                 <h5 class="mb-0">Ongoing Projects</h5>
                 <button
-                  class="btn btn-primary btn-sm"
+                  class="btn btn-sm btn-primary"
                   data-bs-toggle="modal"
-                  data-bs-target="addProjectModal"
+                  data-bs-target="#addProjectModal"
                 >
                   <i class="fa-solid fa-plus me-1"></i> Add New
                 </button>
               </div>
+
               <div class="row g-4">
-                <!-- project-1 -->
+                <!-- Project 1 -->
                 <div class="col-md-6 col-lg-4">
                   <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
@@ -332,28 +327,28 @@
                   </div>
                 </div>
 
-                <!-- project-2 -->
+                <!-- Project 2 -->
                 <div class="col-md-6 col-lg-4">
                   <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
-                      <h6 class="fw-bold">Payments Revamp</h6>
+                      <h6 class="fw-bold">AI Insights Dashboard</h6>
                       <p class="text-muted mb-2">
-                        Team: <strong>Backend</strong>
+                        Team: <strong>Data Science</strong>
                       </p>
                       <div class="progress mb-2" style="height: 10px">
                         <div
-                          class="progress-bar bg-primary"
-                          style="width: 80%"
+                          class="progress-bar bg-success"
+                          style="width: 65%"
                         ></div>
                       </div>
-                      <small class="text-muted">80% complete</small>
+                      <small class="text-muted">65% complete</small>
                     </div>
                     <div
                       class="card-footer bg-white border-0 d-flex justify-content-between"
                     >
                       <span
-                        ><i class="fa-regular fa-calendar"></i> Due: Dec
-                        2025</span
+                        ><i class="fa-regular fa-calendar"></i> Due: Jan
+                        2026</span
                       >
                       <a href="#" class="btn btn-sm btn-outline-primary"
                         >View</a
@@ -362,28 +357,28 @@
                   </div>
                 </div>
 
-                <!-- project-3 -->
+                <!-- Project 3 -->
                 <div class="col-md-6 col-lg-4">
                   <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
-                      <h6 class="fw-bold">Payments Revamp</h6>
+                      <h6 class="fw-bold">Infrastructure Upgrade</h6>
                       <p class="text-muted mb-2">
-                        Team: <strong>Backend</strong>
+                        Team: <strong>DevOps</strong>
                       </p>
                       <div class="progress mb-2" style="height: 10px">
                         <div
-                          class="progress-bar bg-primary"
-                          style="width: 80%"
+                          class="progress-bar bg-warning"
+                          style="width: 50%"
                         ></div>
                       </div>
-                      <small class="text-muted">80% complete</small>
+                      <small class="text-muted">50% complete</small>
                     </div>
                     <div
                       class="card-footer bg-white border-0 d-flex justify-content-between"
                     >
                       <span
-                        ><i class="fa-regular fa-calendar"></i> Due: Dec
-                        2025</span
+                        ><i class="fa-regular fa-calendar"></i> Due: Feb
+                        2026</span
                       >
                       <a href="#" class="btn btn-sm btn-outline-primary"
                         >View</a
@@ -395,7 +390,7 @@
             </div>
           </section>
 
-          <!-- project addition modal -->
+          <!-- Add Project Modal -->
           <div
             class="modal fade"
             id="addProjectModal"
@@ -494,20 +489,22 @@
             </div>
           </div>
 
-          <!-- report section -->
+          <!-- Reports -->
           <section id="reports" class="my-5">
             <div class="card p-4">
               <h5 class="mb-3">Reports & Analytics</h5>
               <div class="row g-4">
-                <div class="cold-md-7">
+                <div class="col-md-7">
                   <div class="card p-3 h-100">
                     <h6>Project Performance Overview</h6>
                     <canvas id="reportBar"></canvas>
                   </div>
                 </div>
-                <div class="cold-md-5">
-                  <h6>Resource Distribution</h6>
-                  <canvas id="reportPie"></canvas>
+                <div class="col-md-5">
+                  <div class="card p-3 h-100">
+                    <h6>Resource Distribution</h6>
+                    <canvas id="reportPie"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
@@ -515,5 +512,10 @@
         </main>
       </div>
     </div>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="data.js"></script>
   </body>
 </html>
