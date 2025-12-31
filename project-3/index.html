@@ -394,6 +394,124 @@
               </div>
             </div>
           </section>
+
+          <!-- project addition modal -->
+          <div
+            class="modal fade"
+            id="addProjectModal"
+            tabindex="-1"
+            aria-labelledby="addProjectModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title fw-bold" id="addProjectModalLabel">
+                    Add New Project
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <div class="modal-body">
+                  <form id="addProjectForm">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Project Name</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="projectName"
+                          placeholder="Enter project name"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Team</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="projectTeam"
+                          placeholder="Team name (e.g., Backend)"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Progress (%)</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="projectProgress"
+                          placeholder="e.g. 65"
+                          min="0"
+                          max="100"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Due Date</label>
+                        <input
+                          type="month"
+                          class="form-control"
+                          id="projectDue"
+                          required
+                        />
+                      </div>
+                      <div class="col-12">
+                        <label class="form-label">Description</label>
+                        <textarea
+                          class="form-control"
+                          id="projectDescription"
+                          rows="3"
+                          placeholder="Brief description..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="saveProjectBtn"
+                  >
+                    <i class="fa-solid fa-save me-1"></i> Save Project
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- report section -->
+          <section id="reports" class="my-5">
+            <div class="card p-4">
+              <h5 class="mb-3">Reports & Analytics</h5>
+              <div class="row g-4">
+                <div class="cold-md-7">
+                  <div class="card p-3 h-100">
+                    <h6>Project Performance Overview</h6>
+                    <canvas id="reportBar"></canvas>
+                  </div>
+                </div>
+                <div class="cold-md-5">
+                  <h6>Resource Distribution</h6>
+                  <canvas id="reportPie"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
         </main>
       </div>
     </div>
