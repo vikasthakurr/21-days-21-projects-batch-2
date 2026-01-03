@@ -4,7 +4,7 @@ const rosterUrl = "https://jsonplaceholder.typicode.com/users?_limit=10";
 const clockUrl = "https://worldtimeapi.org/api/timezone/Asia/Kolkata";
 // Real time API to sync with internet clock (IST)
 
-// all major access
+// All major UI components selected once to improve performance
 const providerSelect = document.getElementById("providerSelect");
 const dateInput = document.getElementById("dateInput");
 const loadSlotsBtn = document.getElementById("loadSlotsBtn");
@@ -28,57 +28,60 @@ const confirmMeta = document.getElementById("confirmMeta");
 const confirmBtn = document.getElementById("confirmBtn");
 const notesInput = document.getElementById("notesInput");
 
-//all stats
-
+// Tracks current app state in one place
 const state = {
-  providers: [],
-  nowUtc: null,
-  target: null,
-  bookings: [],
-  pendingSlot: null,
+  providers: [], // list of all providers
+  nowUtc: null, // synced internet clock
+  target: null, // currently selected provider + date
+  bookings: [], // all booked slots
+  pendingSlot: null, // temporary slot before confirmation
 };
 
 function readBookings() {
+  // Get bookings from LocalStorage or use empty array
   state.bookings = JSON.parse(
-    localStorage.getItem("quickSlot-bookings" || "[]")
+    localStorage.getItem("quickslot-bookings") || "[]"
   );
 }
 
 function saveBookings() {
-  localStorage.setItem("quickSlot-booking", JSON.stringify(state.bookings));
-  statBookings.textContent = state.bookings.length;
+  localStorage.setItem("quickslot-bookings", JSON.stringify(state.bookings));
+  statBookings.textContent = state.bookings.length; // Update dashboard stat
 }
 
 async function fetchProviders() {
   providerSelect.disabled = true;
-  providerSelect.innerHTML = `<option>Loading Please wait...</option>`;
+  providerSelect.innerHTML = `<option>Loading roster…</option>`;
 
   try {
     const res = await fetch(rosterUrl);
     const data = await res.json();
 
+    // Map API data to simple provider objects
     state.providers = data.map((person) => ({
       id: person.id,
       name: person.name,
       specialty: person.company?.bs || "Generalist",
       city: person.address?.city || "Remote",
     }));
+
     statProviders.textContent = state.providers.length;
     renderProviderSelect();
   } catch (err) {
-    providerSelect.innerHTML = `<option>Error occurred</option>`;
-    console.log(err);
+    providerSelect.innerHTML = `<option>Error loading providers</option>`;
+    console.error(err);
   }
 }
 
 function renderProviderSelect() {
   providerSelect.disabled = false;
-  providerSelect.innerHTML = `<option value=">Select Providers</option>`;
+  providerSelect.innerHTML = `<option value="">Select provider</option>`;
 
+  // Create <option> for each provider
   state.providers.forEach((p) => {
     const opt = document.createElement("option");
     opt.value = p.id;
-    opt.textContent = `${p.name} - ${p.specialty}`;
+    opt.textContent = `${p.name} — ${p.specialty}`;
     providerSelect.appendChild(opt);
   });
 }
@@ -114,7 +117,7 @@ async function syncClock() {
 }
 
 function setMinDate() {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
   dateInput.min = today;
   dateInput.value = today;
 }
@@ -124,23 +127,27 @@ function buildSlots(date) {
 
   for (let hour = 9; hour <= 17; hour++) {
     ["00", "30"].forEach((minute) => {
-      const label = `${String(hour).padStart(2, "0")}:${minute}`;
+      const label = `${String(hour).padStart(2, "0")}:${minute}`; // 09:00, 09:30, etc.
       slots.push(label);
     });
   }
+
+  // Convert each slot into an object with "disabled" flag
   return slots.map((label) => ({
     label,
     disabled: isSlotDisabled(date, label),
   }));
 }
-// buildSlots();
 
 function isSlotDisabled(date, slotLabel) {
-  const targetDate = new Date(`${date}T${slotLabel}:00+5:30`);
+  // Convert slot + date → JS Date()
+  const targetDate = new Date(`${date}T${slotLabel}:00+05:30`);
   const now = state.nowUtc || new Date();
 
+  // Rule 1: cannot book past times
   if (targetDate < now) return true;
 
+  // Rule 2: cannot book already-booked slot for same provider
   const alreadyBooked = state.bookings.some(
     (item) =>
       item.date === date &&
@@ -150,7 +157,6 @@ function isSlotDisabled(date, slotLabel) {
 
   return alreadyBooked;
 }
-// isSlotDisabled();
 
 function renderSlots(providerId, date) {
   const provider = state.providers.find((p) => p.id === Number(providerId));
@@ -202,12 +208,14 @@ function openModal(provider, date, slotLabel) {
   state.pendingSlot = { provider, date, slotLabel };
 
   confirmTitle.textContent = provider.name;
-  confirmMeta.textContent = `${date} . ${slotLabel} IST`;
+  confirmMeta.textContent = `${date} · ${slotLabel} IST`;
   notesInput.value = "";
+
   confirmModal.show();
 }
+
 confirmBtn.addEventListener("click", () => {
-  if (!state.pendingSlot) return;
+  if (!state.pendingSlot) return; // safety check
 
   const payload = {
     id: crypto.randomUUID(), // unique booking id
@@ -218,16 +226,15 @@ confirmBtn.addEventListener("click", () => {
     slot: state.pendingSlot.slotLabel,
     notes: notesInput.value.trim(),
   };
+
   state.bookings.push(payload);
-  saveBookings();
+
+  saveBookings(); // persist
   renderSlots(state.pendingSlot.provider.id, state.pendingSlot.date);
   renderBookings();
-  //TODO: please add a function to send mail
-  //TODO: don't use nodemailer please
-
+  sendConfirmationEmail(payload); // optional API
   confirmModal.hide();
 });
-function renderBookings() {}
 
 function renderBookings() {
   bookingsList.innerHTML = "";
@@ -269,7 +276,6 @@ function renderBookings() {
     });
 }
 
-//cancel booking
 function cancelBooking(id) {
   state.bookings = state.bookings.filter((booking) => booking.id !== id);
   saveBookings();
@@ -283,10 +289,38 @@ function cancelBooking(id) {
 clearBookingsBtn.addEventListener("click", () => {
   if (!state.bookings.length) return;
 
-  if (confirm("clear all booking are you sure ?")) {
+  if (confirm("Clear all stored bookings?")) {
     state.bookings = [];
     saveBookings();
     renderBookings();
     if (state.target) renderSlots(state.target.providerId, state.target.date);
   }
 });
+
+loadSlotsBtn.addEventListener("click", async () => {
+  const providerId = providerSelect.value;
+  const date = dateInput.value;
+
+  if (!providerId || !date) {
+    alert("select date or provider");
+    return;
+  }
+  await syncClock();
+  renderSlots(providerId, date);
+});
+refreshBtn.addEventListener("click", async () => {
+  await syncClock();
+  if (state.target) renderSlots(state.target.providerId, state.target.date);
+});
+
+async function init() {
+  readBookings();
+  statBookings.textContent = state.bookings.length;
+  setMinDate();
+
+  await Promise.all([fetchProviders(), syncClock()]);
+
+  renderBookings();
+}
+
+document.addEventListener("DOMContentLoaded", init);
