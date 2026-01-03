@@ -112,3 +112,88 @@ async function syncClock() {
     )}`;
   }
 }
+
+function setMinDate() {
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.min = today;
+  dateInput.value = today;
+}
+
+function buildSlots(date) {
+  const slots = [];
+
+  for (let hour = 9; hour <= 17; hour++) {
+    ["00", "30"].forEach((minute) => {
+      const label = `${String(hour).padStart(2, "0")}:${minute}`;
+      slots.push(label);
+    });
+  }
+  return slots.map((label) => ({
+    label,
+    disabled: isSlotDisabled(date, label),
+  }));
+}
+// buildSlots();
+
+function isSlotDisabled(date, slotLabel) {
+  const targetDate = new Date(`${date}T${slotLabel}:00+5:30`);
+  const now = state.nowUtc || new Date();
+
+  if (targetDate < now) return true;
+
+  const alreadyBooked = state.bookings.some(
+    (item) =>
+      item.date === date &&
+      item.slot === slotLabel &&
+      item.providerId === state.target?.providerId
+  );
+
+  return alreadyBooked;
+}
+// isSlotDisabled();
+
+function renderSlots(providerId, date) {
+  const provider = state.providers.find((p) => p.id === Number(providerId));
+
+  // If no provider or date selected → show placeholder
+  if (!provider || !date) {
+    slotsGrid.innerHTML = `<div class="col-12 text-center text-secondary">Select a provider and date to view availability.</div>`;
+    return;
+  }
+
+  // Save current selection in global state
+  state.target = { providerId: provider.id, providerName: provider.name, date };
+
+  // Update header info
+  slotsHeadline.textContent = `Slots for ${provider.name}`;
+  slotMeta.textContent = `${new Date(
+    date
+  ).toDateString()} • refreshed ${new Date().toLocaleTimeString("en-IN")}`;
+
+  const slots = buildSlots(date);
+
+  slotsGrid.innerHTML = "";
+
+  // Render each slot as a card
+  slots.forEach((slot) => {
+    const col = document.createElement("div");
+    col.className = "col-6 col-xl-4";
+
+    const card = document.createElement("div");
+    card.className = `slot-card h-100 ${slot.disabled ? "disabled" : ""}`;
+    card.innerHTML = `
+      <div class="fw-semibold">${slot.label}</div>
+      <div class="small text-secondary">${
+        slot.disabled ? "Unavailable" : "Tap to book"
+      }</div>
+    `;
+
+    // When available → clicking opens modal
+    if (!slot.disabled) {
+      card.onclick = () => openModal(provider, date, slot.label);
+    }
+
+    col.appendChild(card);
+    slotsGrid.appendChild(col);
+  });
+}
