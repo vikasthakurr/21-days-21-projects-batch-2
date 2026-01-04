@@ -280,3 +280,88 @@ function setupTemplates() {
     drawPreview();
   });
 }
+
+function buildForm() {
+  sectionObserver = new IntersectionObserver(watchSections, {
+    root: null,
+    threshold: 0.35,
+  });
+
+  schema.forEach((section) => {
+    const wrapper = document.createElement("section");
+    wrapper.className = "vstack gap-3 border-bottom pb-4";
+    wrapper.dataset.section = section.id;
+    wrapper.id = section.id;
+
+    const heading = document.createElement("div");
+    heading.className = "form-section-title";
+    heading.textContent = section.title;
+    wrapper.appendChild(heading);
+
+    if (section.repeatable) {
+      const collection = document.createElement("div");
+      collection.className = "vstack gap-3";
+      collection.dataset.collection = section.id;
+      collections[section.id] = collection;
+      wrapper.appendChild(collection);
+
+      const controls = document.createElement("div");
+      controls.className = "d-flex justify-content-end";
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "btn btn-sm btn-outline-primary";
+      addBtn.textContent = `Add ${section.title}`;
+      addBtn.addEventListener("click", () => addRepeater(section, collection));
+      controls.appendChild(addBtn);
+      wrapper.appendChild(controls);
+
+      addRepeater(section, collection);
+    } else {
+      const sectionBody = document.createElement("div");
+      sectionBody.className = "vstack gap-3";
+      section.fields.forEach((field) => {
+        sectionBody.appendChild(buildField(section, field));
+      });
+      wrapper.appendChild(sectionBody);
+    }
+    form.appendChild(wrapper);
+    addSectionLink(section);
+    sectionObserver.observe(wrapper);
+  });
+}
+
+function buildField(section, field, index = null) {
+  const fieldId =
+    index !== null
+      ? `${section.id} -${field.key} -${index}`
+      : `${section.id}-${field.key}`;
+
+  const container = document.createElement("div");
+  const label = document.createElement("label");
+  label.className = "form-label small text-uppercase text-muted";
+  label.htmlFor = fieldId;
+  label.textContent = field.label;
+
+  let input;
+  if (field.type === "textarea") {
+    input = document.createElement("textarea");
+    input.rows = field.rows || 4;
+    input.className = "form-control";
+  } else {
+    input = document.createElement("input");
+    input.type = field.type;
+    input.className = "form-control";
+  }
+  input.placeholder = field.placeholder || "";
+  input.id = fieldId;
+  input.dataset.section = section.id;
+  input.dataset.key = field.key;
+  if (index !== null) {
+    input.dataset.index = index;
+  }
+  input.addEventListener("input", handleInput);
+
+  container.appendChild(label);
+  container.appendChild(input);
+  return container;
+}
