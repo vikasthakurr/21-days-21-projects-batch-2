@@ -530,3 +530,54 @@ function defaultSummary() {
   // Role: returns fallback copy for empty summaries.
   return "Seasoned professional focused on measurable business value and elegant systems.";
 }
+
+function bindUI() {
+  if (templateCount) {
+    templateCount.textContent = Object.keys(templates).length;
+  }
+  if (sectionCount) {
+    sectionCount.textContent = schema.length;
+  }
+  previewBgButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setPreviewBg(btn.dataset.previewBg));
+  });
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
+}
+
+function markTemplate(key) {
+  templateButtons.forEach((pill, templateKey) => {
+    pill.classList.toggle("active", templateKey === key);
+  });
+}
+
+function addSectionLink(section) {
+  if (!sectionNav) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = section.title;
+
+  button.addEventListener("click", () => {
+    document.getElementById(section.id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+  sectionNav.appendChild(button);
+  navButtons.set(section.id, button);
+}
+
+function watchSections(entries) {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      setActiveSection(entry.target.id);
+    }
+  });
+}
+
+function setActiveSection(sectionId) {
+  navButtons.forEach((button, id) => {
+    button.classList.toggle("active", id === sectionId);
+  });
+}
