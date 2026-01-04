@@ -196,6 +196,10 @@ const templates = {
 };
 
 // state function
+const state = {
+  data: {},
+  templateKey: "minimal",
+};
 
 //export style....
 const EXPORT_STYLES = `
@@ -208,3 +212,37 @@ const EXPORT_STYLES = `
   .template-card { border: 1px solid #e9ecef; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05); }
   .export-card { border: 1px solid #e9ecef; border-radius: .75rem; padding: 1rem; margin-bottom: 1rem; background: #f8f9fa; }
 `;
+
+//actual js part
+
+const form = document.getElementById("resumeForm");
+const preview = document.getElementById("resumePreview");
+const templateSelect = document.getElementById("templateSelect");
+const downloadBtn = document.getElementById("downloadBtn");
+const resetBtn = document.getElementById("resetBtn");
+const templatePills = document.getElementById("templatePills");
+const templateCount = document.getElementById("templateCount");
+const sectionCount = document.getElementById("sectionCount");
+const fieldProgress = document.getElementById("fieldProgress");
+const sectionNav = document.getElementById("sectionNav");
+const liveMeta = document.getElementById("liveMeta");
+const previewPane = document.querySelector(".preview-pane");
+const previewBgButtons = document.querySelectorAll("[data-preview-bg]");
+const themeToggle = document.getElementById("themeToggle");
+
+const collection = {};
+const navButtons = new Map();
+const templateButtons = new Map();
+let sectionObserver;
+
+startApp();
+
+function startApp() {
+  setupTemplates();
+  buildForm();
+  bindUI();
+  setPreviewBg("Plain");
+  markTemplate(state.templateKey);
+  drawPreview();
+  refreshStats();
+}
