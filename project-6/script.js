@@ -95,8 +95,6 @@ const schema = [
   },
 ];
 
-//template minimal and card
-
 const templates = {
   minimal: {
     label: "Minimal",
@@ -195,13 +193,11 @@ const templates = {
   },
 };
 
-// state function
 const state = {
   data: {},
   templateKey: "minimal",
 };
 
-//export style....
 const EXPORT_STYLES = `
   body { font-family: "Inter","Segoe UI",system-ui,-apple-system,sans-serif; margin: 0; padding: 2rem; }
   h1 { font-size: 2rem; margin-bottom: 0.25rem; }
@@ -212,8 +208,6 @@ const EXPORT_STYLES = `
   .template-card { border: 1px solid #e9ecef; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05); }
   .export-card { border: 1px solid #e9ecef; border-radius: .75rem; padding: 1rem; margin-bottom: 1rem; background: #f8f9fa; }
 `;
-
-//actual js part
 
 const form = document.getElementById("resumeForm");
 const preview = document.getElementById("resumePreview");
@@ -230,7 +224,7 @@ const previewPane = document.querySelector(".preview-pane");
 const previewBgButtons = document.querySelectorAll("[data-preview-bg]");
 const themeToggle = document.getElementById("themeToggle");
 
-const collection = {};
+const collections = {};
 const navButtons = new Map();
 const templateButtons = new Map();
 let sectionObserver;
@@ -238,16 +232,18 @@ let sectionObserver;
 startApp();
 
 function startApp() {
+  // Role: bootstraps templates, form, bindings, and initial render.
   setupTemplates();
   buildForm();
   bindUI();
-  setPreviewBg("Plain");
+  setPreviewBg("plain");
   markTemplate(state.templateKey);
   drawPreview();
   refreshStats();
 }
 
 function setupTemplates() {
+  // Role: fills template selector + pills and hooks template switching.
   templateSelect.innerHTML = "";
   if (templatePills) {
     templatePills.innerHTML = "";
@@ -282,9 +278,10 @@ function setupTemplates() {
 }
 
 function buildForm() {
+  // Role: builds schema-driven form sections and observers.
   sectionObserver = new IntersectionObserver(watchSections, {
-    root: null,
-    threshold: 0.35,
+    root: null, // root: null means the browser viewport acts as the observation root.
+    threshold: 0.35, // threshold: callback fires when 35% of the section is visible.
   });
 
   schema.forEach((section) => {
@@ -324,6 +321,7 @@ function buildForm() {
       });
       wrapper.appendChild(sectionBody);
     }
+
     form.appendChild(wrapper);
     addSectionLink(section);
     sectionObserver.observe(wrapper);
@@ -331,12 +329,13 @@ function buildForm() {
 }
 
 function buildField(section, field, index = null) {
+  // Role: creates a single input/textarea for the form schema.
   const fieldId =
     index !== null
-      ? `${section.id} -${field.key} -${index}`
+      ? `${section.id}-${field.key}-${index}`
       : `${section.id}-${field.key}`;
-
   const container = document.createElement("div");
+
   const label = document.createElement("label");
   label.className = "form-label small text-uppercase text-muted";
   label.htmlFor = fieldId;
@@ -364,4 +363,96 @@ function buildField(section, field, index = null) {
   container.appendChild(label);
   container.appendChild(input);
   return container;
+}
+
+function handleInput(event) {
+  // Role: syncs user input into state then refreshes preview stats.
+  const { section, key, index } = event.target.dataset;
+  const value = event.target.value;
+
+  if (isRepeater(section)) {
+    const idx = Number(index);
+    state.data[section] = state.data[section] || [];
+    state.data[section][idx] = state.data[section][idx] || {};
+    state.data[section][idx][key] = value;
+  } else {
+    state.data[key] = value;
+  }
+  drawPreview();
+  refreshStats();
+}
+
+function isRepeater(sectionId) {
+  // Role: tells whether a schema section supports repeats.
+  return schema.find((section) => section.id === sectionId)?.repeatable;
+}
+
+function addRepeater(section, collection) {
+  // Role: inserts a repeatable section card with inputs.
+  const index = collection.childElementCount;
+  const card = document.createElement("div");
+  card.className = "border rounded-3 p-3 bg-light position-relative";
+  card.dataset.index = index;
+
+  section.fields.forEach((field) => {
+    card.appendChild(buildField(section, field, index));
+  });
+
+  if (index > 0) {
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "btn-close position-absolute top-0 end-0 m-2";
+    removeBtn.addEventListener("click", () => removeRepeater(section.id, card));
+    card.appendChild(removeBtn);
+  }
+
+  collection.appendChild(card);
+}
+
+function removeRepeater(sectionId, card) {
+  const collection = card.parentElement;
+  collection.removeChild(card);
+  Array.from(collection.children).forEach((child, idx) => {
+    child.dataset.index = idx;
+    child.querySelectorAll("[data-index]").forEach((input) => {
+      input.dataset.index = idx;
+    });
+  });
+  if (state.data[sectionId]) {
+    state.data[sectionId].splice(Number(card.dataset.index), 1);
+  }
+  drawPreview();
+  refreshStats();
+}
+
+function drawPreview() {
+  // Role: regenerates the resume preview pane HTML.
+  const template = templates[state.templateKey];
+  const prepared = prepareData();
+  preview.className = `resume-preview ${template.className}`;
+  preview.innerHTML = template.render(prepared);
+  refreshMeta();
+}
+
+function prepareData() {
+  // Role: normalizes state into template-friendly data.
+  const payload = { ...state.data };
+  payload.skillsArray = (payload.skills || "")
+    .split(",")
+    .map((skill) => skill.trim())
+    .filter(Boolean);
+
+  payload.experience = (payload.experience || []).map((item = {}) => ({
+    ...item,
+    highlights: (item.highlights || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean),
+  }));
+
+  payload.education = (payload.education || []).map((item = {}) => ({
+    ...item,
+  }));
+
+  return payload;
 }
