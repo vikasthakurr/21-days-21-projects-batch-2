@@ -456,3 +456,77 @@ function prepareData() {
 
   return payload;
 }
+
+function drawListSection(title, items = [], renderer) {
+  // Role: renders a titled list-style resume section.
+  if (!items.length) return "";
+  return `
+    <section>
+      <h2>${title}</h2>
+      ${items.map(renderer).join("")}
+    </section>
+  `;
+}
+
+function drawCardList(items = [], renderer) {
+  if (!items.length)
+    return `<p class="text-muted">Add entries in the form.</p>`;
+  return items
+    .map(
+      (item) => `
+      <div class="border rounded-3 p-3 mb-3 bg-light export-card">
+        ${renderer(item)}
+      </div>
+    `
+    )
+    .join("");
+}
+
+function drawHighlights(highlights = []) {
+  const filtered = (Array.isArray(highlights) ? highlights : [])
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (!filtered.length) return "";
+  return `
+    <ul>
+      ${filtered.map((line) => `<li>${line}</li>`).join("")}
+    </ul>
+  `;
+}
+
+function drawSkills(skills = []) {
+  if (!skills?.length) return "";
+  return `
+    <section>
+      <h2>Skills</h2>
+      <div class="d-flex flex-wrap">
+        ${skills
+          .map(
+            (skill) =>
+              `<span class="badge rounded-pill badge-skill">${skill}</span>`
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function drawBadges(items) {
+  if (!items.length) return "";
+  return items
+    .map((item) => `<span class="badge text-bg-light">${item}</span>`)
+    .join("");
+}
+
+function joinValues(values, separator = " ") {
+  return values.filter(Boolean).join(separator);
+}
+
+function cleanValues(values = []) {
+  return values.filter(Boolean);
+}
+
+function defaultSummary() {
+  // Role: returns fallback copy for empty summaries.
+  return "Seasoned professional focused on measurable business value and elegant systems.";
+}
