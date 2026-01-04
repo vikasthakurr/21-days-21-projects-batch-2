@@ -246,3 +246,37 @@ function startApp() {
   drawPreview();
   refreshStats();
 }
+
+function setupTemplates() {
+  templateSelect.innerHTML = "";
+  if (templatePills) {
+    templatePills.innerHTML = "";
+  }
+
+  Object.entries(templates).forEach(([key, template]) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = template.label;
+    templateSelect.appendChild(option);
+
+    const pill = document.createElement("button");
+    pill.type = "button";
+    pill.className = "template-pill";
+    pill.textContent = template.label;
+    pill.addEventListener("click", () => {
+      state.templateKey = key;
+      templateSelect.value = key;
+      markTemplate(key);
+      drawPreview();
+    });
+    templatePills?.appendChild(pill);
+    templateButtons.set(key, pill);
+  });
+
+  templateSelect.value = state.templateKey;
+  templateSelect.addEventListener("change", (e) => {
+    state.templateKey = e.target.value;
+    markTemplate(state.templateKey);
+    drawPreview();
+  });
+}
