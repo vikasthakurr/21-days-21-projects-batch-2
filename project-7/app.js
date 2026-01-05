@@ -251,3 +251,54 @@ function render() {
   countNode.textContent = tasks.length;
   if (window.lucide) lucide.createIcons();
 }
+
+//notification
+
+async function ensurePermission() {
+  if (!("Notification" in window)) {
+    alert("Notifications are not supported in this browser.");
+    return false;
+  }
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+  const p = await Notification.requestPermission();
+  return p === "granted";
+}
+
+notifyPermBtn.addEventListener("click", async () => {
+  const ok = await ensurePermission();
+  notifyPermBtn.innerHTML = ok
+    ? '<i data-lucide="bell-ring" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"></i> Notifications enabled'
+    : '<i data-lucide="bell" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"></i> Enable Notifications';
+  if (window.lucide) lucide.createIcons();
+});
+
+function sendNotification(title, body) {
+  if (!("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  try {
+    new Notification(title, { body, silent: false });
+  } catch (e) {
+    console.warn("notification send failed", e);
+  }
+}
+
+window.addEventListener("beforeunload", saveTasks());
+
+[search, filterStatus, sortBy].forEach((el) => {
+  el.addEventListener("input", render);
+});
+render();
+
+window.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+    e.preventDefault();
+    titleIn.focus();
+  }
+});
+
+window.addEventListener("storage", () => {
+  tasks = loadTasks();
+  render();
+});
