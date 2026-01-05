@@ -1,11 +1,11 @@
-//access of dom nodes
-
+// ======= Simple persistent Task app using localStorage + Notifications ========
+const LS_KEY = "taskmate.tasks.v1";
 const form = document.getElementById("taskForm");
 const titleIn = document.getElementById("title");
 const notesIn = document.getElementById("notes");
 const dueIn = document.getElementById("due");
 const priorityIn = document.getElementById("priority");
-const taskNode = document.getElementById("tasks");
+const tasksNode = document.getElementById("tasks");
 const search = document.getElementById("search");
 const filterStatus = document.getElementById("filterStatus");
 const sortBy = document.getElementById("sortBy");
@@ -14,29 +14,27 @@ const editingId = document.getElementById("editingId");
 const notifyPermBtn = document.getElementById("notifyPermBtn");
 const clearAllBtn = document.getElementById("clearAllBtn");
 
-const LS_KEY = "project-7-tasks";
-
 let tasks = loadTasks();
 
+// ===== Storage helpers =====
 function loadTasks() {
   try {
     const raw = localStorage.getItem(LS_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch (e) {
-    console.log("load error", e);
+    console.error("load error", e);
     return [];
   }
 }
-
 function saveTasks() {
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
   render();
 }
 
+// ===== Utilities =====
 function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
-
 function fmtDateISO(d) {
   try {
     const dt = new Date(d);
@@ -47,15 +45,12 @@ function fmtDateISO(d) {
   }
 }
 
-//crud operation
-
+// ===== CRUD operations =====
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-
   const title = titleIn.value.trim();
   if (!title) return titleIn.focus();
   const notes = notesIn.value.trim();
-
   const due = dueIn.value
     ? new Date(dueIn.value + "T00:00:00").toISOString()
     : null;
@@ -63,7 +58,7 @@ form.addEventListener("submit", (e) => {
   const editing = editingId.value;
 
   if (editing) {
-    //update
+    // update
     const t = tasks.find((x) => x.id === editing);
     if (t) {
       t.title = title;
@@ -88,6 +83,7 @@ form.addEventListener("submit", (e) => {
     };
     tasks.unshift(newTask);
   }
+
   saveTasks();
   form.reset();
 });
@@ -95,15 +91,12 @@ form.addEventListener("submit", (e) => {
 function editTask(id) {
   const t = tasks.find((x) => x.id === id);
   if (!t) return;
-
   titleIn.value = t.title;
   notesIn.value = t.notes || "";
   priorityIn.value = t.priority || "medium";
-
   if (t.due) {
     const dt = new Date(t.due);
-    const pad = (n) => n.toString().padStart(2, "0");
-
+    const pad = (n) => String(n).padStart(2, "0");
     const local =
       dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate());
     dueIn.value = local;
@@ -111,7 +104,7 @@ function editTask(id) {
     dueIn.value = "";
   }
   editingId.value = id;
-  document.getElementById("saveBtn").textContent = "Update Task";
+  document.getElementById("saveBtn").textContent = "Save";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -122,43 +115,41 @@ function toggleDone(id) {
   t.updatedAt = new Date().toISOString();
   saveTasks();
 }
-
 function removeTask(id) {
-  if (!confirm("Are you sure?")) return;
+  if (!confirm("Delete this task?")) return;
   tasks = tasks.filter((x) => x.id !== id);
   saveTasks();
 }
+
 function clearAll() {
-  if (!confirm("Are you sure?")) return;
+  if (!confirm("Clear all tasks permanently?")) return;
   tasks = [];
   saveTasks();
 }
 
 clearAllBtn.addEventListener("click", clearAll);
 
-//render function
-
+// ===== Render =====
 function render() {
   const q = search.value.trim().toLowerCase();
   let out = tasks.slice();
-
   if (filterStatus.value === "active") out = out.filter((t) => !t.done);
   if (filterStatus.value === "completed") out = out.filter((t) => t.done);
-
   if (filterStatus.value === "due") {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
-    out = out.filter((t) => {
-      t.due &&
+    out = out.filter(
+      (t) =>
+        t.due &&
         new Date(t.due).getTime() - now <= day &&
-        new Date(t.due).getTime() > now;
-    });
-  }
-  if (q) {
-    out = out.filter((t) =>
-      (t.title + "" + (t.notes || "").toLowerCase()).includes(q)
+        new Date(t.due).getTime() > now
     );
   }
+  if (q)
+    out = out.filter((t) =>
+      (t.title + " " + (t.notes || "")).toLowerCase().includes(q)
+    );
+
   // sort
   if (sortBy.value === "createdDesc")
     out.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -175,8 +166,8 @@ function render() {
     out.sort((a, b) => map[a.priority] - map[b.priority]);
   }
 
-  //render
-  taskNode.innerHTML = "";
+  // render
+  tasksNode.innerHTML = "";
   if (out.length === 0) {
     tasksNode.innerHTML =
       '<div class="small" style="opacity:0.7">No tasks yet — add one on the left.</div>';
@@ -248,12 +239,20 @@ function render() {
 
     tasksNode.appendChild(el);
   });
+
   countNode.textContent = tasks.length;
   if (window.lucide) lucide.createIcons();
 }
 
-//notification
+// escape for safety
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
+// ===== Notifications =====
 async function ensurePermission() {
   if (!("Notification" in window)) {
     alert("Notifications are not supported in this browser.");
@@ -276,21 +275,42 @@ notifyPermBtn.addEventListener("click", async () => {
 function sendNotification(title, body) {
   if (!("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
-
   try {
     new Notification(title, { body, silent: false });
   } catch (e) {
-    console.warn("notification send failed", e);
+    console.warn("notify failed", e);
   }
 }
 
-window.addEventListener("beforeunload", saveTasks());
+// check reminders every 20 seconds for demo (use 60s+ in production)
+setInterval(() => {
+  const now = Date.now();
+  tasks.forEach((t) => {
+    if (t.due && !t.reminded) {
+      const d = new Date(t.due).getTime();
+      // remind when due time passed or within 60 seconds
+      if (now >= d) {
+        sendNotification("Task due: " + t.title, t.notes || "");
+        t.reminded = true; // avoid duplicate
+        t.updatedAt = new Date().toISOString();
+        saveTasks();
+      }
+    }
+  });
+}, 20000);
 
-[search, filterStatus, sortBy].forEach((el) => {
-  el.addEventListener("input", render);
-});
+// Save tasks when window unloads
+window.addEventListener("beforeunload", saveTasks);
+
+// search / filters events
+[search, filterStatus, sortBy].forEach((el) =>
+  el.addEventListener("input", render)
+);
+
+// initial render
 render();
 
+// keyboard shortcut: new task focus
 window.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
     e.preventDefault();
@@ -298,7 +318,38 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// If user edits the page manually, reload tasks from storage
 window.addEventListener("storage", () => {
   tasks = loadTasks();
   render();
 });
+
+// Provide a small demo dataset the first time
+if (tasks.length === 0) {
+  tasks.push({
+    id: uid(),
+    title: "Welcome to TaskMate Lush",
+    notes:
+      "Use the left form to add tasks. Try setting a due time to get a notification.",
+    priority: "medium",
+    due: null,
+    done: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    reminded: false,
+  });
+  saveTasks();
+}
+
+// Quick helper: clear notifications flag (in case user wants to test again)
+// Expose to console: window._taskmate = {tasks, saveTasks}
+window._taskmate = {
+  get tasks() {
+    return tasks;
+  },
+  saveTasks,
+  loadTasks,
+};
+
+// Initial lucide icon creation
+if (window.lucide) lucide.createIcons();
