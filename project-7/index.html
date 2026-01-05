@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TaskMate Tasks & Reminders</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <div class="app">
+      <header>
+        <h1>
+          TaskMate <span style="font-weight: 400; opacity: 0.7">Lush</span>
+        </h1>
+        <div class="controls">
+          <button id="notifyPermBtn" class="btn ghost">
+            <i
+              data-lucide="bell"
+              style="
+                width: 16px;
+                height: 16px;
+                margin-right: 4px;
+                vertical-align: middle;
+              "
+            ></i>
+            Notifications
+          </button>
+          <button id="clearAllBtn" class="btn ghost" title="Clear everything">
+            <i
+              data-lucide="trash-2"
+              style="
+                width: 16px;
+                height: 16px;
+                margin-right: 4px;
+                vertical-align: middle;
+              "
+            ></i>
+            Clear All
+          </button>
+        </div>
+      </header>
+
+      <div class="top">
+        <div class="card">
+          <form id="taskForm">
+            <div class="row">
+              <div class="field">
+                <label for="title">Title</label>
+                <input
+                  id="title"
+                  type="text"
+                  placeholder="e.g. Finish report"
+                  required
+                />
+              </div>
+              <div class="field">
+                <label for="priority">Priority</label>
+                <select id="priority">
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="notes">Notes</label>
+                <textarea
+                  id="notes"
+                  placeholder="Optional details..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="due">Due date</label>
+                <input id="due" type="date" />
+              </div>
+              <div
+                style="
+                  flex: 0 0 120px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: flex-end;
+                "
+              >
+                <button class="btn" id="saveBtn">Add Task</button>
+              </div>
+            </div>
+
+            <input type="hidden" id="editingId" />
+          </form>
+        </div>
+
+        <div class="card right-card">
+          <div class="filters">
+            <input
+              id="search"
+              class="search"
+              type="text"
+              placeholder="Search tasks..."
+            />
+            <select id="filterStatus">
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="due">Due soon</option>
+            </select>
+            <select id="sortBy">
+              <option value="createdDesc">Newest</option>
+              <option value="createdAsc">Oldest</option>
+              <option value="dueAsc">Due soon</option>
+              <option value="priorityHigh">Priority</option>
+            </select>
+          </div>
+          <div id="tasks" class="list small">
+            <!-- tasks injected here -->
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div>Stored: <span id="count">0</span> tasks</div>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
