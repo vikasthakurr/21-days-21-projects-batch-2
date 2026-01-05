@@ -91,3 +91,34 @@ form.addEventListener("submit", (e) => {
   saveTasks();
   form.reset();
 });
+
+function editTask(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t) return;
+
+  titleIn.value = t.title;
+  notesIn.value = t.notes || "";
+  priorityIn.value = t.priority || "medium";
+
+  if (t.due) {
+    const dt = new Date(t.due);
+    const pad = (n) => n.toString().padStart(2, "0");
+
+    const local =
+      dt.getFullYear() + "-" + pad(dt.getMonth() + 1) + "-" + pad(dt.getDate());
+    dueIn.value = local;
+  } else {
+    dueIn.value = "";
+  }
+  editingId.value = id;
+  document.getElementById("saveBtn").textContent = "Update Task";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggleDone(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  t.updatedAt = new Date().toISOString();
+  saveTasks();
+}
